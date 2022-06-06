@@ -1,7 +1,10 @@
 'use strict';
 
 // Importing the React Native modules
-import React, { useState, Component } from 'react';
+import React, { Component, useState, useEffect } from 'react';
+// useEffect is a hook, it is called when the component is rendered
+// usestate is a hook, that allows you to use state in a functional component (like a class)
+
 import {
     StyleSheet,
     Text,
@@ -12,14 +15,17 @@ import {
     Button,
     FlatList,
     SectionList,
+    ActivityIndicator,
 } from 'react-native';
 
 // Defining the styles
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flex: 1, // Makes the container take up the entire screen (height)
         justifyContent: 'center',
         alignItems: 'center',
+        padding: 10,
+        paddingTop: 50,
     },
     button: {
         alignItems: 'center',
@@ -39,15 +45,39 @@ const styles = StyleSheet.create({
         height: 44,
     },
     sectionHeader: {
-        paddingTop: 2,
-        paddingLeft: 10,
-        paddingRight: 10,
-        paddingBottom: 2,
+        padding: 10,
         fontSize: 14,
         fontWeight: 'bold',
         backgroundColor: 'rgba(247,247,247,1.0)',
     },
-})
+    btnNormal: {
+        borderColor: 'blue',
+        borderWidth: 1,
+        borderRadius: 10,
+        height: 30,
+        width: 100,
+    },
+    btnPress: {
+        borderColor: 'blue',
+        borderWidth: 1,
+        height: 30,
+        width: 100,
+    }
+});
+
+const FlexExampleApp = () => {
+    return (
+        <View style={[{
+            flex: 1,
+            padding: 20,
+            flexDirection: "row",
+        }]}>
+            <View style={{ flex: 1, backgroundColor: "red" }} />
+            <View style={{ flex: 2, backgroundColor: "darkorange" }} />
+            <View style={{ flex: 3, backgroundColor: "green" }} />
+        </View>
+    );
+};
 
 // App that counts the number of times the button is pressed
 const CounterApp = () => {
@@ -235,4 +265,51 @@ const SectionListBasicsApp = () => {
     );
 }
 
-export default SectionListBasicsApp;
+// App that demonstrates the use of Fetch API, useEffect and ActivityIndicator
+const NetoworkingDemo = () => {
+
+    const [isLoading, setLoading] = useState(true); // Used for ActivityIndicator
+    const [data, setData] = useState([]);
+
+    const getMovies = async () => {
+
+        return await fetch('https://reactnative.dev/movies.json')
+            // fetch on mobile works differently than in the browser
+            // also different depending on iOS or Android
+            // all this for security reasons
+            // more info: https://reactnative.dev/docs/network
+            .then((response) => response.json())
+            .then((json) => {
+                setData(json.movies);
+            }).catch((error) => {
+                console.error(error);
+            }).finally(() => {
+                setLoading(false);
+            });
+    }
+
+    useEffect(() => {
+        // useEffect is a lifecycle method that runs after the component mounts
+        // useEffect is used to run code after the component mounts
+        // Similar to componentDidMount and componentDidUpdate in React or window.onload in the browser
+        getMovies();
+    }, []);
+
+    return (
+        <View style={styles.container}>
+            {isLoading ? <ActivityIndicator /> : (
+                // ActivityIndicator is a component that shows a spinning wheel
+                // Used to show that the app is loading, can have CSS styling
+                <FlatList
+                    data={data}
+                    keyExtractor={({ id }, index) => id}
+                    renderItem={({ item }) => (
+                        <Text>{item.title}, {item.releaseYear}</Text>
+                    )}
+                />
+            )}
+        </View>
+    );
+}
+
+export default NetoworkingDemo;
