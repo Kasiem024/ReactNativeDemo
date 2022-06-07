@@ -1,7 +1,7 @@
 'use strict';
 
 // Importing the React Native modules
-import React, { Component, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 // useEffect is a hook, it is called when the component is rendered
 // usestate is a hook, that allows you to use state in a functional component (like a class)
 
@@ -17,6 +17,13 @@ import {
     SectionList,
     ActivityIndicator,
 } from 'react-native';
+
+// Used to navigate between screens, and to pass data between screens
+// since React Native doesn't have a built-in navigation system
+// More info: https://reactnative.dev/docs/navigation
+// More info: https://reactnavigation.org/docs/getting-started
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 // Defining the styles
 const styles = StyleSheet.create({
@@ -312,4 +319,55 @@ const NetoworkingDemo = () => {
     );
 }
 
-export default NetoworkingDemo;
+const Stack = createNativeStackNavigator();
+// Returns object containing props: Navigator, Group and Screen
+
+const HomeScreen = () => {
+    return (
+        <View style={styles.container}>
+            <Text>Home Screen</Text>
+        </View>
+    );
+};
+
+// Styles for the screens in the navigation app
+// Can used as global styles for multiple screens
+const screenStyles = { headerStyle: { backgroundColor: 'papayawhip' } }
+
+// App that demonstrates the Navigation between screens/components/functions
+// Basically like a router file in NodeJS
+// Each screen is a component
+const NavigationDemo = () => {
+    return (
+        <NavigationContainer>
+            {/* NavigationContainer:
+            Component used to wrap whole app inside */}
+
+            <Stack.Navigator initialRouteName="Home" screenOptions={screenStyles}>
+                {/* initialRouteName is which component to render first (index)
+                whatever is inside screenOptions applies to all screens inside the component */}
+
+                <Stack.Group >
+                    {/* Group:
+                    Component used to group several screens, returned from createNativeStackNavigator,
+                    screenOptions can be used here */}
+
+                    <Stack.Screen
+                        // Screen is similiar to a route in NodeJS
+                        name="Home" // Name of the screen, Required
+                        component={HomeScreen} // Component to render, Required
+                        options={
+                            // Options for the screen, Optional 
+                            // More info: https://reactnavigation.org/docs/native-stack-navigator/
+                            {
+                                title: 'Welcome',
+                            }
+                        }
+                    />
+                </Stack.Group>
+            </Stack.Navigator>
+        </NavigationContainer>
+    );
+};
+
+export default NavigationDemo;
