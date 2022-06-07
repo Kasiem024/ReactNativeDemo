@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 10,
         paddingTop: 50,
+        margin: 50,
     },
     button: {
         alignItems: 'center',
@@ -73,6 +74,98 @@ const styles = StyleSheet.create({
         width: 100,
     }
 });
+
+
+const Stack = createNativeStackNavigator();
+// Returns object containing props: Navigator, Group and Screen
+
+// Styles for the screens in the navigation app
+// Can used as global styles for multiple screens
+const screenStyles = { headerStyle: { backgroundColor: 'papayawhip' } }
+
+// App that demonstrates the Navigation between screens/components/functions/pages
+// Basically like a router file in NodeJS
+// Each screen is a component
+const NavigationDemo = () => {
+    return (
+        <NavigationContainer>
+            {/* NavigationContainer:
+            Component used to wrap whole app inside */}
+
+            <Stack.Navigator initialRouteName="Home" screenOptions={screenStyles}>
+                {/* initialRouteName is which component to render first (index)
+                whatever is inside screenOptions applies to all screens inside the component */}
+
+                <Stack.Group >
+                    {/* Group:
+                    Component used to group several screens, returned from createNativeStackNavigator,
+                    screenOptions can be used here */}
+
+                    <Stack.Screen
+                        // Screen is similiar to a route in NodeJS
+                        name="Home" // Name of the screen, Required
+                        component={HomeScreen} // Component to render, Required
+                        options={
+                            // Options for the screen, Optional 
+                            // More info: https://reactnavigation.org/docs/native-stack-navigator/
+                            {
+                                title: 'Welcome',
+                            }
+                        }
+                    />
+
+                    {componentArr.map((item) => (
+                        <Stack.Screen key={item.key} name={item.key} component={item.component} />
+                    ))}
+
+                    <Stack.Screen name="NavigationParamsExample" component={NavigationParamsExample} />
+                    <Stack.Screen name="CreatePostScreen" component={CreatePostScreen} />
+                </Stack.Group>
+            </Stack.Navigator>
+        </NavigationContainer>
+    );
+};
+
+
+const HomeScreen = ({ navigation, route }) => {
+    // navigation is an object/prop that contains methods to navigate to other screens
+
+    return (
+        <ScrollView contentContainerStyle={styles.container}>
+            <Text>Home Screen</Text>
+
+            {componentArr.map((item) => (
+                <Pressable key={item.key} style={styles.button}
+                    onPress={() => navigation.navigate(item.key)}>
+                    <Text>
+                        {item.key}
+                    </Text>
+                </Pressable>
+            ))}
+
+            <Pressable
+                style={styles.button}
+                onPress={() => navigation.navigate('NavigationParamsExample', {
+                    itemId: 86,
+                    otherParam: 'Random param',
+                })}
+            >
+                <Text>NavigationParamsExample</Text>
+            </Pressable>
+
+            <Pressable
+                style={styles.button}
+                onPress={() => navigation.navigate('CreatePostScreen', {
+                    post: route.params?.post
+                })}
+            >
+                <Text>NavigationParamsExample</Text>
+                <Text>Post: {route.params?.post}</Text>
+                {/* If route.params.post exists show it */}
+            </Pressable>
+        </ScrollView>
+    );
+}
 
 const FlexExampleApp = () => {
     return (
@@ -320,87 +413,6 @@ const NetoworkingDemo = () => {
     );
 }
 
-const Stack = createNativeStackNavigator();
-// Returns object containing props: Navigator, Group and Screen
-
-// Styles for the screens in the navigation app
-// Can used as global styles for multiple screens
-const screenStyles = { headerStyle: { backgroundColor: 'papayawhip' } }
-
-// App that demonstrates the Navigation between screens/components/functions/pages
-// Basically like a router file in NodeJS
-// Each screen is a component
-const NavigationDemo = () => {
-    return (
-        <NavigationContainer>
-            {/* NavigationContainer:
-            Component used to wrap whole app inside */}
-
-            <Stack.Navigator initialRouteName="Home" screenOptions={screenStyles}>
-                {/* initialRouteName is which component to render first (index)
-                whatever is inside screenOptions applies to all screens inside the component */}
-
-                <Stack.Group >
-                    {/* Group:
-                    Component used to group several screens, returned from createNativeStackNavigator,
-                    screenOptions can be used here */}
-
-                    <Stack.Screen
-                        // Screen is similiar to a route in NodeJS
-                        name="Home" // Name of the screen, Required
-                        component={HomeScreen} // Component to render, Required
-                        options={
-                            // Options for the screen, Optional 
-                            // More info: https://reactnavigation.org/docs/native-stack-navigator/
-                            {
-                                title: 'Welcome',
-                            }
-                        }
-                    />
-                    <Stack.Screen name="NavigationExample" component={NavigationExample} />
-                    <Stack.Screen name="NavigationParamsExample" component={NavigationParamsExample} />
-                    <Stack.Screen name="CreatePostScreen" component={CreatePostScreen} />
-                </Stack.Group>
-            </Stack.Navigator>
-        </NavigationContainer>
-    );
-};
-
-const HomeScreen = ({ navigation, route }) => {
-    // navigation is an object/prop that contains methods to navigate to other screens
-
-    return (
-        <View style={styles.container}>
-            <Text>Home Screen</Text>
-            <Pressable
-                style={styles.button}
-                onPress={() => navigation.navigate('NavigationExample')}
-            >
-                <Text>Go to NavigationExample</Text>
-            </Pressable>
-            <Pressable
-                style={styles.button}
-                onPress={() => navigation.navigate('NavigationParamsExample', {
-                    itemId: 86,
-                    otherParam: 'Random param',
-                })}
-            >
-                <Text>Go to NavigationParamsExample</Text>
-            </Pressable>
-            <Pressable
-                style={styles.button}
-                onPress={() => navigation.navigate('CreatePostScreen', {
-                    post: route.params?.post
-                })}
-            >
-                <Text>Go to NavigationParamsExample</Text>
-                <Text>Post: {route.params?.post}</Text>
-                {/* If route.params.post exists show it */}
-            </Pressable>
-        </View>
-    );
-}
-
 // Component for the NavigationExample screen
 // Shows different ways to navigate to other screens
 const NavigationExample = ({ navigation }) => {
@@ -480,7 +492,7 @@ const NavigationParamsExample = ({ route, navigation }) => {
 
 // Component for the CreatePostScreen screen
 // Shows how to create a param and pass it to another screen
-function CreatePostScreen({ navigation, route }) {
+const CreatePostScreen = ({ navigation, route }) => {
     const [postText, setPostText] = React.useState('');
 
     return (
@@ -505,5 +517,19 @@ function CreatePostScreen({ navigation, route }) {
         </>
     );
 }
+
+// Array of components to render in the stack
+const componentArr = [
+    { key: 'FlexExampleApp', component: FlexExampleApp },
+    { key: 'CounterApp', component: CounterApp },
+    { key: 'CoreComponentsApp', component: CoreComponentsApp },
+    { key: 'CatCafeApp1', component: CatCafeApp1 },
+    { key: 'CatCafeApp2', component: CatCafeApp2 },
+    { key: 'TextTranslatorApp', component: TextTranslatorApp },
+    { key: 'FlatListBasicsApp', component: FlatListBasicsApp },
+    { key: 'SectionListBasicsApp', component: SectionListBasicsApp },
+    { key: 'NetoworkingDemo', component: NetoworkingDemo },
+    { key: 'NavigationExample', component: NavigationExample },
+];
 
 export default NavigationDemo;
