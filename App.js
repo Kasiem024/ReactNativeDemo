@@ -167,40 +167,6 @@ const HomeScreen = ({ navigation, route }) => {
     );
 }
 
-const FlexExampleApp = () => {
-    return (
-        <View style={[{
-            flex: 1,
-            padding: 20,
-            flexDirection: "row",
-        }]}>
-            <View style={{ flex: 1, backgroundColor: "red" }} />
-            <View style={{ flex: 2, backgroundColor: "darkorange" }} />
-            <View style={{ flex: 3, backgroundColor: "green" }} />
-        </View>
-    );
-};
-
-// App that counts the number of times the button is pressed
-const CounterApp = () => {
-    // Defining the function that will be called when the button is pressed,
-    // and that will increment the count, defaulting to 0
-    const [count, setCount] = useState(0);
-
-    return (
-        <View style={styles.container}>
-
-            <Text>You clicked {count} times</Text>
-
-            {/* When button is pressed setCount increments count */}
-            <Button
-                onPress={() => setCount(count + 1)}
-                title='Click me!'
-            />
-        </View>
-    );
-};
-
 // App that shows the core react native components
 const CoreComponentsApp = () => {
     return (
@@ -238,6 +204,26 @@ const CoreComponentsApp = () => {
         </ScrollView>
     );
 }
+
+// App that counts the number of times the button is pressed
+const CounterApp = () => {
+    // Defining the function that will be called when the button is pressed,
+    // and that will increment the count, defaulting to 0
+    const [count, setCount] = useState(0);
+
+    return (
+        <View style={styles.container}>
+
+            <Text>You clicked {count} times</Text>
+
+            {/* When button is pressed setCount increments count */}
+            <Button
+                onPress={() => setCount(count + 1)}
+                title='Click me!'
+            />
+        </View>
+    );
+};
 
 // Child component of the CatCafeApp1
 // Shows the cat's name and image
@@ -520,9 +506,8 @@ const CreatePostScreen = ({ navigation, route }) => {
 
 // Array of components to render in the stack
 const componentArr = [
-    { key: 'FlexExampleApp', component: FlexExampleApp },
-    { key: 'CounterApp', component: CounterApp },
     { key: 'CoreComponentsApp', component: CoreComponentsApp },
+    { key: 'CounterApp', component: CounterApp },
     { key: 'CatCafeApp1', component: CatCafeApp1 },
     { key: 'CatCafeApp2', component: CatCafeApp2 },
     { key: 'TextTranslatorApp', component: TextTranslatorApp },
