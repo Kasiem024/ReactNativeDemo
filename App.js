@@ -43,9 +43,10 @@ const styles = StyleSheet.create({
     },
     image: { width: 200, height: 200 },
     textInput: {
-        height: 40,
         borderColor: 'gray',
-        borderWidth: 1
+        borderWidth: 1,
+        padding: 10,
+        backgroundColor: 'white',
     },
     item: {
         padding: 10,
@@ -213,8 +214,7 @@ const TextTranslatorApp = () => {
             <TextInput
                 style={styles.textInput}
                 placeholder="Type here to translate!"
-                // When text is changed, setText will update text
-                onChangeText={(newText) => setText(newText)}
+                onChangeText={(newText) => setText(newText)} // When text is changed, setText will update text
                 defaultValue={text} />
 
             {/* For every word in the input writes "word" */}
@@ -357,38 +357,62 @@ const NavigationDemo = () => {
                             }
                         }
                     />
-                    <Stack.Screen name="Details" component={DetailsScreen} />
+                    <Stack.Screen name="NavigationExample" component={NavigationExample} />
+                    <Stack.Screen name="NavigationParamsExample" component={NavigationParamsExample} />
+                    <Stack.Screen name="CreatePostScreen" component={CreatePostScreen} />
                 </Stack.Group>
             </Stack.Navigator>
         </NavigationContainer>
     );
 };
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ navigation, route }) => {
     // navigation is an object/prop that contains methods to navigate to other screens
+
     return (
         <View style={styles.container}>
             <Text>Home Screen</Text>
             <Pressable
                 style={styles.button}
-                onPress={() => navigation.navigate('Details')}
-            // navigate is a method that takes a screen name and navigates to it
-            // takes into account the current screen and the screens in the stack
-            // the 'stack' is the list of screens that are currently rendered (history)
+                onPress={() => navigation.navigate('NavigationExample')}
             >
-                <Text>Go to Details</Text>
+                <Text>Go to NavigationExample</Text>
+            </Pressable>
+            <Pressable
+                style={styles.button}
+                onPress={() => navigation.navigate('NavigationParamsExample', {
+                    itemId: 86,
+                    otherParam: 'Random param',
+                })}
+            >
+                <Text>Go to NavigationParamsExample</Text>
+            </Pressable>
+            <Pressable
+                style={styles.button}
+                onPress={() => navigation.navigate('CreatePostScreen', {
+                    post: route.params?.post
+                })}
+            >
+                <Text>Go to NavigationParamsExample</Text>
+                <Text>Post: {route.params?.post}</Text>
+                {/* If route.params.post exists show it */}
             </Pressable>
         </View>
     );
 }
 
-const DetailsScreen = ({ navigation }) => {
+// Component for the NavigationExample screen
+// Shows different ways to navigate to other screens
+const NavigationExample = ({ navigation }) => {
     return (
         <View style={styles.container}>
-            <Text>Details Screen</Text>
+            <Text>NavigationExample Screen</Text>
             <Pressable
                 style={styles.button}
                 onPress={() => navigation.navigate('Home')}
+            // navigate is a method that takes a screen name and navigates to it
+            // takes into account the current screen and the screens in the stack
+            // the 'stack' is the list of screens that are currently rendered (history)
             >
                 <Text>Go to Home (navigate)</Text>
             </Pressable>
@@ -404,9 +428,9 @@ const DetailsScreen = ({ navigation }) => {
             </Pressable>
             <Pressable
                 style={styles.button}
-                onPress={() => navigation.push('Details')}
+                onPress={() => navigation.push('NavigationExample')}
             >
-                <Text>Go to Details again (push)</Text>
+                <Text>Go to NavigationExample again (push)</Text>
             </Pressable>
             <Pressable
                 style={styles.button}
@@ -424,6 +448,61 @@ const DetailsScreen = ({ navigation }) => {
                 <Text>Go back to first screen in stack (popToTop)</Text>
             </Pressable>
         </View>
+    );
+}
+
+// Component for the NavigationParamsExample screen
+// Shows how to get params from the previous screen
+// and set params for the next screen
+const NavigationParamsExample = ({ route, navigation }) => {
+
+    const { itemId, otherParam } = route.params;
+    // Destructuring params from route object
+    // More info: https://reactnavigation.org/docs/params/
+
+    return (
+        <View style={styles.container}>
+            <Text>NavigationParamsExample Screen</Text>
+            <Text>itemId: {JSON.stringify(itemId)}</Text>
+            <Text>otherParam: {JSON.stringify(otherParam)}</Text>
+            <Pressable
+                style={styles.button}
+                onPress={() =>
+                    navigation.push('NavigationParamsExample', {
+                        itemId: Math.floor(Math.random() * 100),
+                    })}
+            >
+                <Text>Go to NavigationExample again</Text>
+            </Pressable>
+        </View>
+    );
+}
+
+// Component for the CreatePostScreen screen
+// Shows how to create a param and pass it to another screen
+function CreatePostScreen({ navigation, route }) {
+    const [postText, setPostText] = React.useState('');
+
+    return (
+        <>
+            <TextInput
+                multiline
+                placeholder="Write some text"
+                style={styles.textInput}
+                defaultValue={route.params?.post}
+                onChangeText={setPostText}
+            />
+            <Button
+                title="Done"
+                onPress={() => {
+                    // Pass and merge params back to home screen
+                    navigation.navigate({
+                        name: 'Home',
+                        params: { post: postText },
+                    });
+                }}
+            />
+        </>
     );
 }
 
