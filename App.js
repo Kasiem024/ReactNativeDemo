@@ -13,6 +13,7 @@ import {
     Image,
     TextInput,
     Button,
+    Pressable,
     FlatList,
     SectionList,
     ActivityIndicator,
@@ -36,9 +37,9 @@ const styles = StyleSheet.create({
     },
     button: {
         alignItems: 'center',
-        backgroundColor: '#DDDDDD',
+        backgroundColor: 'lightblue',
         padding: 10,
-        marginBottom: 10
+        margin: 10
     },
     image: { width: 200, height: 200 },
     textInput: {
@@ -322,19 +323,11 @@ const NetoworkingDemo = () => {
 const Stack = createNativeStackNavigator();
 // Returns object containing props: Navigator, Group and Screen
 
-const HomeScreen = () => {
-    return (
-        <View style={styles.container}>
-            <Text>Home Screen</Text>
-        </View>
-    );
-};
-
 // Styles for the screens in the navigation app
 // Can used as global styles for multiple screens
 const screenStyles = { headerStyle: { backgroundColor: 'papayawhip' } }
 
-// App that demonstrates the Navigation between screens/components/functions
+// App that demonstrates the Navigation between screens/components/functions/pages
 // Basically like a router file in NodeJS
 // Each screen is a component
 const NavigationDemo = () => {
@@ -364,10 +357,74 @@ const NavigationDemo = () => {
                             }
                         }
                     />
+                    <Stack.Screen name="Details" component={DetailsScreen} />
                 </Stack.Group>
             </Stack.Navigator>
         </NavigationContainer>
     );
 };
+
+const HomeScreen = ({ navigation }) => {
+    // navigation is an object/prop that contains methods to navigate to other screens
+    return (
+        <View style={styles.container}>
+            <Text>Home Screen</Text>
+            <Pressable
+                style={styles.button}
+                onPress={() => navigation.navigate('Details')}
+            // navigate is a method that takes a screen name and navigates to it
+            // takes into account the current screen and the screens in the stack
+            // the 'stack' is the list of screens that are currently rendered (history)
+            >
+                <Text>Go to Details</Text>
+            </Pressable>
+        </View>
+    );
+}
+
+const DetailsScreen = ({ navigation }) => {
+    return (
+        <View style={styles.container}>
+            <Text>Details Screen</Text>
+            <Pressable
+                style={styles.button}
+                onPress={() => navigation.navigate('Home')}
+            >
+                <Text>Go to Home (navigate)</Text>
+            </Pressable>
+            <Pressable
+                style={styles.button}
+                onPress={() => navigation.push('Home')}
+            // push is a method that takes a screen name and navigates to it
+            // does not take into account the screens in the stack
+            // push adds a new screen/route to the stack
+            // basically a new 'Home' screen is rendered instead of going BACK to Home
+            >
+                <Text>Go to Home (push)</Text>
+            </Pressable>
+            <Pressable
+                style={styles.button}
+                onPress={() => navigation.push('Details')}
+            >
+                <Text>Go to Details again (push)</Text>
+            </Pressable>
+            <Pressable
+                style={styles.button}
+                onPress={() => navigation.goBack()}
+            // goBack is a method that takes you back to the previous screen
+            // same as back button on the top left of the screen
+            >
+                <Text>Go back (goBack)</Text>
+            </Pressable>
+            <Pressable
+                style={styles.button}
+                onPress={() => navigation.popToTop()}
+            // popToTop is a method that takes you back to the first screen in the stack
+            >
+                <Text>Go back to first screen in stack (popToTop)</Text>
+            </Pressable>
+        </View>
+    );
+}
 
 export default NavigationDemo;
